@@ -22,7 +22,7 @@ version = '0.15'
 import sys
 from math import *
 from egv import egv
-from nano_library import K40_CLASS
+from nano_library import K40Interface
 from dxf import DXF_CLASS
 from svg_reader import SVG_READER
 from svg_reader import SVG_TEXT_EXCEPTION
@@ -35,6 +35,7 @@ import simpletransform
 import cubicsuperpath
 import cspsubdiv
 import traceback
+
 DEBUG = False
 
 VERSION = sys.version_info[0]
@@ -2298,14 +2299,13 @@ class Application(Frame):
             debug_message(traceback.format_exc())
 
     def send_egv_data(self,data,num_passes=1):
-        pre_process_CRC        = self.pre_pr_crc.get()
         if self.k40 != None:
             self.k40.timeout       = int(self.t_timeout.get())   
             self.k40.n_timeouts    = int(self.n_timeouts.get())
-            self.k40.send_data(data,self.update_gui,self.stop,num_passes,pre_process_CRC)
+            self.k40.send_data(data, self.update_gui)
         else:
-            self.k40 = K40_CLASS()
-            self.k40.send_data(data,self.update_gui,self.stop,num_passes,pre_process_CRC)
+            self.k40 = K40Interface()
+            self.k40.send_data(data, self.update_gui)
             self.k40 = None
             self.master.update()
         
@@ -2356,7 +2356,7 @@ class Application(Frame):
     def Reset(self):
         if self.k40 != None:
             try:
-                self.k40.reset_usb()
+                self.k40.reset()
                 self.statusMessage.set("USB Reset Succeeded")
             except:
                 debug_message(traceback.format_exc())
@@ -2376,7 +2376,7 @@ class Application(Frame):
     def Release_USB(self):
         if self.k40 != None:
             try:
-                self.k40.release_usb()
+                self.k40.release()
                 self.statusMessage.set("USB Release Succeeded")
             except:
                 debug_message(traceback.format_exc())
@@ -2386,10 +2386,10 @@ class Application(Frame):
     def Initialize_Laser(self,junk=None):
         self.stop[0]=False
         self.Release_USB()
-        self.k40=K40_CLASS()
+        self.k40=K40Interface()
         try:
             self.k40.initialize_device()
-            self.k40.say_hello()
+            self.k40.hello()
             if self.init_home.get():
                 self.Home()
             else:

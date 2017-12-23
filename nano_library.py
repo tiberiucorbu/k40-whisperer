@@ -19,6 +19,7 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 import logging
+import math
 
 import usb.core
 import usb.util
@@ -54,12 +55,15 @@ _TYPE_RESP = 255
 
 
 def _data_packet(data):
+    if len(data) > 30:
+        raise Exception("Data too long to fit in packet")
+
     res = []
     res.append(_TYPE_DATA)
     res.append(0)  # always zero?
     for d in data:
         res.append(ord(d))
-    # packet is always 34 bytes (including CRC and terminator)
+    # packet is always 34 bytes (including CRC, header, terminator and zero)
     res += [70 for _ in range(32 - len(res))]
     res.append(_TYPE_DATA)
     res.append(_crc(res[1:-1]))
@@ -93,15 +97,18 @@ class K40Interface(object):
         self.read_addr = 0x82
 
     def _device_read(self, length):
-        return self.dev.read(self.read_addr, length, self.timeout)
+        res = self.dev.read(self.read_addr, length, self.timeout)
+        logger.debug('Response: {}'.format(res))
+        return res
 
     def _device_write(self, data):
+        logger.debug('Request: {}'.format(data))
         self.dev.write(self.write_addr, data, self.timeout)
 
-    def _device_reset(self):
+    def reset(self):
         self.dev.reset()
 
-    def _device_release(self):
+    def release(self):
         usb.util.dispose_resources(self.dev)
         self.dev = None
 
@@ -146,15 +153,20 @@ class K40Interface(object):
 
     def send_data(self, data, update_gui=lambda x: None):
         packets = []
-        for i in range(0, len(data), 32):
+
+        # Split data into blocks to fit into packets.
+        block_size = 30
+        block_count = int(math.ceil(float(len(data)) / block_size))
+        for i in range(0, len(data), block_size):
             update_gui("Calculating CRC and generating packets: {:.1f}%"
-                       .format(100 * (1.0 + i) / 1+(len(data) / 32.0)))
-            packet = ''.join(chr(c) for c in data[i:i+32])
+                       .format(100 * i / block_count))
+
+            packet = ''.join(chr(c) for c in data[i:i+block_size])
             packets.append(_data_packet(packet))
 
         for i, packet in enumerate(packets):
             update_gui("Sending data to Laser: {:.1f}%"
-                       .format(100 * (1.0 + i) / 1.0+len(packets)))
+                       .format(100.0 * i / len(packets)))
             self._send_packet_retry(packet, update_gui=update_gui)
 
     def _send_packet_retry(self, packet, update_gui=lambda x: None):
@@ -166,7 +178,8 @@ class K40Interface(object):
                 update_gui("USB Timeout #{}".format(retry))
                 continue
 
-            response = _RESP_BUFFER_FULL
+            response = self.hello()
+
             while response == _RESP_BUFFER_FULL:
                 response = self.hello()
 
