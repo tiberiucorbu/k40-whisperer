@@ -2991,7 +2991,7 @@ class Application(Frame):
         gen_settings.iconname("Settings")
 
         try:
-            gen_settings.iconbitmap(bitmap="@emblem64")
+            gen_settings.iconbitmap(bitmap="@assets/emblem64")
         except:
             debug_message(traceback.format_exc())
             pass
@@ -3143,7 +3143,7 @@ class Application(Frame):
         raster_settings.iconname("Raster Settings")
 
         try:
-            raster_settings.iconbitmap(bitmap="@emblem64")
+            raster_settings.iconbitmap(bitmap="@assets/emblem64")
         except:
             debug_message(traceback.format_exc())
             pass
@@ -3344,7 +3344,7 @@ class UnitsDialog(tkSimpleDialog.Dialog):
         self.iconname("Units")
 
         try:
-            self.iconbitmap(bitmap="@emblem64")
+            self.iconbitmap(bitmap="@assets/emblem64")
         except:
             pass
         
@@ -3381,7 +3381,7 @@ app.master.iconname("K40")
 app.master.minsize(800,560) #800x600 min
 
 try:
-    app.master.iconbitmap(bitmap="@emblem64")
+    app.master.iconbitmap(bitmap="@assets/emblem64")
 except:
     pass
 
