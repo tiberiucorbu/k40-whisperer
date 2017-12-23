@@ -341,21 +341,21 @@ class Application(Frame):
         self.Stop_Button       = Button(self.master,text="Stop",             command=self.Stop)
 
         try:
-            self.left_image  = self.Imaging_Free(Image.open("left.png"),bg=None)
-            self.right_image = self.Imaging_Free(Image.open("right.png"),bg=None)
-            self.up_image    = self.Imaging_Free(Image.open("up.png"),bg=None)
-            self.down_image  = self.Imaging_Free(Image.open("down.png"),bg=None)
+            self.left_image  = self.Imaging_Free(Image.open("assets/left.png"),bg=None)
+            self.right_image = self.Imaging_Free(Image.open("assets/right.png"),bg=None)
+            self.up_image    = self.Imaging_Free(Image.open("assets/up.png"),bg=None)
+            self.down_image  = self.Imaging_Free(Image.open("assets/down.png"),bg=None)
             
             self.Right_Button   = Button(self.master,image=self.right_image, command=self.Move_Right)
             self.Left_Button    = Button(self.master,image=self.left_image,  command=self.Move_Left)
             self.Up_Button      = Button(self.master,image=self.up_image,    command=self.Move_Up)
             self.Down_Button    = Button(self.master,image=self.down_image,  command=self.Move_Down)
 
-            self.UL_image  = self.Imaging_Free(Image.open("UL.png"),bg=None)
-            self.UR_image  = self.Imaging_Free(Image.open("UR.png"),bg=None)
-            self.LR_image  = self.Imaging_Free(Image.open("LR.png"),bg=None)
-            self.LL_image  = self.Imaging_Free(Image.open("LL.png"),bg=None)
-            self.CC_image  = self.Imaging_Free(Image.open("CC.png"),bg=None)
+            self.UL_image  = self.Imaging_Free(Image.open("assets/UL.png"),bg=None)
+            self.UR_image  = self.Imaging_Free(Image.open("assets/UR.png"),bg=None)
+            self.LR_image  = self.Imaging_Free(Image.open("assets/LR.png"),bg=None)
+            self.LL_image  = self.Imaging_Free(Image.open("assets/LL.png"),bg=None)
+            self.CC_image  = self.Imaging_Free(Image.open("assets/CC.png"),bg=None)
             
             self.UL_Button = Button(self.master,image=self.UL_image, command=self.Move_UL)
             self.UR_Button = Button(self.master,image=self.UR_image, command=self.Move_UR)
