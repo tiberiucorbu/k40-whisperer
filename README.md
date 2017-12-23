@@ -11,4 +11,4 @@ Work in progress.
 Documentation
 -------------
 
-See `README_{macOS,Linux}` for the official documentation.
+See `README_Linux.txt` for the official documentation.
