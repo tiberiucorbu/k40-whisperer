@@ -48,12 +48,14 @@ if VERSION == 3:
     from tkinter import *
     from tkinter.filedialog import *
     import tkinter.messagebox
+    import tkinter.simpledialog as tkSimpleDialog
     MAXINT = sys.maxsize
 
 else:
     from Tkinter import *
     from tkFileDialog import *
     import tkMessageBox
+    import tkSimpleDialog
     MAXINT = sys.maxint
 
 from PIL import Image
@@ -1760,7 +1762,7 @@ class Application(Frame):
                     
                     y=(him-i)/1000.0
                     x=0
-                    rng = range(0,len(line),1)
+                    rng = list(range(0,len(line),1))
                         
                     for i in rng:
                         seg = line[i]
@@ -2517,7 +2519,7 @@ class Application(Frame):
             self.remove_self_references(lns,self.LoopTree[i])
 
         self.order=[]
-        self.loops = range(Nloops)
+        self.loops = list(range(Nloops))
         for i in range(Nloops):
             if self.LoopTree[i]!=[]:
                 self.addlist(self.LoopTree[i])
@@ -2759,7 +2761,7 @@ class Application(Frame):
                 time_start = time()
             self.k40.send_data(data,self.update_gui, wait_for_laser=True)
             if DEBUG:
-                print "Elapsed Time: %.2f" %(time()-time_start)
+                print ("Elapsed Time: %.2f" %(time()-time_start))
         else:
             self.statusMessage.set("Laser is not initialized.")
             self.statusbar.configure( bg = 'yellow' )
@@ -3936,7 +3938,6 @@ def debug_message(message):
 ################################################################################
 #                         Choose Units Dialog                                  #
 ################################################################################
-import tkSimpleDialog
 class UnitsDialog(tkSimpleDialog.Dialog):
     def body(self, master):
         self.resizable(0,0)

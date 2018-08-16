@@ -19,8 +19,11 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 """
-import simplepath 
+
 from math import *
+
+from k40.svg import simplepath
+
 
 def matprod(mlist):
     prod=mlist[0]

@@ -1,8 +1,10 @@
 #!/usr/bin/env python
-from bezmisc import *
-from ffgeom import *
 
-def maxdist(((p0x,p0y),(p1x,p1y),(p2x,p2y),(p3x,p3y))):
+from k40.svg.bezmisc import *
+from k40.svg.ffgeom import *
+
+def maxdist(points):
+    ((p0x,p0y),(p1x,p1y),(p2x,p2y),(p3x,p3y)) = points
     p0 = Point(p0x,p0y)
     p1 = Point(p1x,p1y)
     p2 = Point(p2x,p2y)

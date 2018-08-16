@@ -34,8 +34,8 @@ class Interpolate(object):
     def __init__(self, x_list, y_list):
         if any([y - x <= 0 for x, y in zip(x_list, x_list[1:])]):
             raise ValueError("x value list must be in ascending order!")
-        x_list = self.x_list = map(float, x_list)
-        y_list = self.y_list = map(float, y_list)
+        x_list = self.x_list = list(map(float, x_list))
+        y_list = self.y_list = list(map(float, y_list))
         intervals = zip(x_list, x_list[1:], y_list, y_list[1:])
         self.slopes = [(y2 - y1)/(x2 - x1) for x1, x2, y1, y2 in intervals]        
     def __getitem__(self, x):
@@ -907,12 +907,12 @@ if __name__ == "__main__":
     bname = "LASER-M2"
     step=0
     for value_in in values:
-        print "% 8.2f" %(value_in),": ",
+        print ("% 8.2f" %(value_in),": ",)
         val=EGV.make_speed(value_in,board_name=bname,Raster_step=step)
         txt=""
         for c in val:
             txt=txt+chr(c)
-        print txt
+        print (txt)
         
        #     for c in val2:
        #         print chr(c),
