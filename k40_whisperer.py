@@ -85,6 +85,9 @@ except:
 
 QUIET = False
 
+def asset(filename):
+    return os.path.join('assets', filename)
+
 class ECoord():
     def __init__(self):
         self.reset()
@@ -477,21 +480,21 @@ class Application(Frame):
         self.Stop_Button       = Button(self.master,text="Stop",             command=self.Stop)
 
         try:
-            self.left_image  = self.Imaging_Free(Image.open("left.png"),bg=None)
-            self.right_image = self.Imaging_Free(Image.open("right.png"),bg=None)
-            self.up_image    = self.Imaging_Free(Image.open("up.png"),bg=None)
-            self.down_image  = self.Imaging_Free(Image.open("down.png"),bg=None)
+            self.left_image  = self.Imaging_Free(Image.open(asset("left.png")),bg=None)
+            self.right_image = self.Imaging_Free(Image.open(asset("right.png")),bg=None)
+            self.up_image    = self.Imaging_Free(Image.open(asset("up.png")),bg=None)
+            self.down_image  = self.Imaging_Free(Image.open(asset("down.png")),bg=None)
             
             self.Right_Button   = Button(self.master,image=self.right_image, command=self.Move_Right)
             self.Left_Button    = Button(self.master,image=self.left_image,  command=self.Move_Left)
             self.Up_Button      = Button(self.master,image=self.up_image,    command=self.Move_Up)
             self.Down_Button    = Button(self.master,image=self.down_image,  command=self.Move_Down)
 
-            self.UL_image  = self.Imaging_Free(Image.open("UL.png"),bg=None)
-            self.UR_image  = self.Imaging_Free(Image.open("UR.png"),bg=None)
-            self.LR_image  = self.Imaging_Free(Image.open("LR.png"),bg=None)
-            self.LL_image  = self.Imaging_Free(Image.open("LL.png"),bg=None)
-            self.CC_image  = self.Imaging_Free(Image.open("CC.png"),bg=None)
+            self.UL_image  = self.Imaging_Free(Image.open(asset("UL.png")),bg=None)
+            self.UR_image  = self.Imaging_Free(Image.open(asset("UR.png")),bg=None)
+            self.LR_image  = self.Imaging_Free(Image.open(asset("LR.png")),bg=None)
+            self.LL_image  = self.Imaging_Free(Image.open(asset("LL.png")),bg=None)
+            self.CC_image  = self.Imaging_Free(Image.open(asset("CC.png")),bg=None)
             
             self.UL_Button = Button(self.master,image=self.UL_image, command=self.Move_UL)
             self.UR_Button = Button(self.master,image=self.UR_image, command=self.Move_UR)
