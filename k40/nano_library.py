@@ -78,7 +78,7 @@ _CMD_ESTOP = _data_packet('I')
 _RESP_OK = 206
 _RESP_BUFFER_FULL = 238
 _RESP_CRC_ERROR = 207
-_RESP_UNKNOWN_1 = 236
+_RESP_COMPLETE = 236
 # After failed initialization followed by succesful initialization
 _RESP_UNKNOWN_2 = 239
 
@@ -138,7 +138,7 @@ class K40Interface(object):
             return None
 
         if response[1] in [_RESP_OK, _RESP_BUFFER_FULL, _RESP_CRC_ERROR,
-                           _RESP_UNKNOWN_1, _RESP_UNKNOWN_2]:
+                           _RESP_COMPLETE, _RESP_UNKNOWN_2]:
             return response[1]
         return None
 
@@ -151,7 +151,7 @@ class K40Interface(object):
     def home_position(self):
         self._device_write(_CMD_HOME)
 
-    def send_data(self, data, update_gui=lambda x: None):
+    def send_data(self, data, update_gui=lambda x: None, wait_for_laser=False):
         packets = []
 
         # Split data into blocks to fit into packets.
@@ -168,6 +168,9 @@ class K40Interface(object):
             update_gui("Sending data to Laser: {:.1f}%"
                        .format(100.0 * i / len(packets)))
             self._send_packet_retry(packet, update_gui=update_gui)
+
+        if wait_for_laser:
+            self.wait_for_finish()
 
     def _send_packet_retry(self, packet, update_gui=lambda x: None):
         for retry in range(self.n_timeouts):
@@ -193,7 +196,22 @@ class K40Interface(object):
             update_gui(msg)
             raise StandardError(msg)
 
+    def wait_for_finish(self, update_gui=lambda x: None):
+        while True:
+            resp = self.hello()
+
+            if resp == _RESP_COMPLETE:
+                return
+            elif resp is None:
+                raise StandardError("The laser cutter stopped responding after"
+                                    " sending data was complete.")
+            else:
+                update_gui("Waiting for laser to finish")
+
     def rapid_move(self, dxmils, dymils):
+        if dxmils == 0 and dymils == 0:
+            return
+
         data = []
         egv_inst = egv(target=lambda s: data.append(s))
         egv_inst.make_move_data(dxmils, dymils)
@@ -201,7 +219,7 @@ class K40Interface(object):
 
     def initialize_device(self):
         try:
-            self._device_release()
+            self.release()
         except:
             pass
 
