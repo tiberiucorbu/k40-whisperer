@@ -386,7 +386,7 @@ class Blocks:
     def update(self, value):
         self.last_block.update(value)
 
-class DXF_CLASS:
+class DXFReader:
     def __init__(self):
         self.units = 0
         self.dxf_messages = ""

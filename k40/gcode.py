@@ -28,7 +28,7 @@ import webbrowser
 ### START LIB ###
 #################
 ############################################################################
-class G_Code_Rip:
+class GCodeReader:
     def __init__(self):
         self.Zero      = 0.0000001
         self.g_code_data  = []

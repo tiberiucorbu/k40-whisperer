@@ -21,13 +21,14 @@ version = '0.20'
 title_text = "K40 Whisperer V"+version
 
 import sys
+import os
+import re
+import binascii
+import getopt
+import operator
+import webbrowser
 from math import *
-from k40.egv import egv
-from k40.nano_library import K40Interface
-from k40.dxf import DXF_CLASS
-from k40.svg.reader import SVGReader, SVGTextException
-from k40.g_code_library import G_Code_Rip
-from k40.interpolate import interpolate
+from time import time
 
 import traceback
 DEBUG = False
@@ -40,43 +41,38 @@ if VERSION == 3:
     from tkinter.filedialog import *
     import tkinter.messagebox
     MAXINT = sys.maxsize
-    
+
 else:
     from Tkinter import *
     from tkFileDialog import *
     import tkMessageBox
     MAXINT = sys.maxint
 
-if VERSION < 3 and sys.version_info[1] < 6:
-    def next(item):
-        return item.next()
-    
-try:
-    import psyco
-    psyco.full()
-    LOAD_MSG = LOAD_MSG+"\nPsyco Loaded\n"
-except:
-    pass
-
-import math
-from time import time
-import os
-import re
-import binascii
-import getopt
-import operator
-import webbrowser
 from PIL import Image
 from PIL import ImageOps
+
 try:
     Image.warnings.simplefilter('ignore', Image.DecompressionBombWarning)
 except:
     pass
+
 try:
     from PIL import ImageTk
     from PIL import _imaging
 except:
     pass #Don't worry everything will still work
+
+from k40.egv import egv
+from k40.nano_library import K40Interface
+from k40.dxf import DXFReader
+from k40.svg import SVGReader, SVGTextException
+from k40.gcode import GCodeReader
+from k40.interpolate import interpolate
+
+
+if VERSION < 3 and sys.version_info[1] < 6:
+    def next(item):
+        return item.next()
 
 QUIET = False
 
@@ -1844,7 +1840,7 @@ class Application(Frame):
     def Open_G_Code(self,filename):
         self.resetPath()
         
-        g_rip = G_Code_Rip()
+        g_rip = GCodeReader()
         try:
             MSG = g_rip.Read_G_Code(filename, XYarc2line = True, arc_angle=2, units="in", Accuracy="")
             Error_Text = ""
