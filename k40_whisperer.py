@@ -25,15 +25,10 @@ from math import *
 from k40.egv import egv
 from k40.nano_library import K40Interface
 from k40.dxf import DXF_CLASS
-from k40.svg_reader import SVG_READER, SVG_TEXT_EXCEPTION
+from k40.svg.reader import SVGReader, SVGTextException
 from k40.g_code_library import G_Code_Rip
 from k40.interpolate import interpolate
 
-from k40 import inkex
-from k40 import simplestyle
-from k40 import simpletransform
-from k40 import cubicsuperpath
-from k40 import cspsubdiv
 import traceback
 DEBUG = False
 
@@ -1586,7 +1581,7 @@ class Application(Frame):
         self.resetPath()
                
         self.SVG_FILE = filemname
-        svg_reader =  SVG_READER()
+        svg_reader =  SVGReader()
         svg_reader.set_inkscape_path(self.inkscape_path.get())
         self.input_dpi = 1000
         svg_reader.image_dpi = self.input_dpi
@@ -1594,8 +1589,8 @@ class Application(Frame):
             try:
                 svg_reader.parse(self.SVG_FILE)
                 svg_reader.make_paths()
-            except SVG_TEXT_EXCEPTION as e:
-                svg_reader = SVG_READER()
+            except SVGTextException as e:
+                svg_reader = SVGReader()
                 svg_reader.set_inkscape_path(self.inkscape_path.get())
                 self.statusMessage.set("Converting TEXT to PATHS.")
                 self.master.update()

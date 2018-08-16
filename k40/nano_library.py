@@ -24,7 +24,7 @@ import math
 import usb.core
 import usb.util
 
-from egv import egv
+from k40.egv import egv
 
 
 logger = logging.getLogger('k40whisperer.interface')

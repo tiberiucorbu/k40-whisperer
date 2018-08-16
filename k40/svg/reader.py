@@ -24,15 +24,16 @@ import tempfile, os, sys, shutil
 from subprocess import Popen, PIPE
 import zipfile
 import re
-# local library
-import inkex
-import simplestyle
-import simpletransform
-import cubicsuperpath
-import cspsubdiv
 import traceback
 
 from PIL import Image
+
+# local library
+from k40.svg import inkex
+from k40.svg import simplestyle
+from k40.svg import simpletransform
+from k40.svg import cubicsuperpath
+from k40.svg import cspsubdiv
 
 try:
     inkex.localize()
@@ -57,7 +58,7 @@ def kill_sub_process(p,timeout_sec):
     raise StandardError("Inkscape sub-process timed out after %d seconds." %(timeout_sec))
 
 ##################################
-class SVG_TEXT_EXCEPTION(Exception):
+class SVGTextException(Exception):
     def __init__(self, value):
         self.value = value
     def __str__(self):
@@ -99,7 +100,7 @@ class CSS_values_class():
         return value
 
 
-class SVG_READER(inkex.Effect):
+class SVGReader(inkex.Effect):
     def __init__(self):
         inkex.Effect.__init__(self)
         self.flatness = 0.01
@@ -688,6 +689,6 @@ class SVG_READER(inkex.Effect):
                 pass
                 
 if __name__ == '__main__':
-    svg_reader =  SVG_READER()
+    svg_reader =  SVGReader()
     svg_reader.parse("test.svg")
     svg_reader.make_paths()
