@@ -22,19 +22,18 @@ title_text = "K40 Whisperer V"+version
 
 import sys
 from math import *
-from egv import egv
-from nano_library import K40Interface
-from dxf import DXF_CLASS
-from svg_reader import SVG_READER
-from svg_reader import SVG_TEXT_EXCEPTION
-from g_code_library import G_Code_Rip
-from interpolate import interpolate
+from k40.egv import egv
+from k40.nano_library import K40Interface
+from k40.dxf import DXF_CLASS
+from k40.svg_reader import SVG_READER, SVG_TEXT_EXCEPTION
+from k40.g_code_library import G_Code_Rip
+from k40.interpolate import interpolate
 
-import inkex
-import simplestyle
-import simpletransform
-import cubicsuperpath
-import cspsubdiv
+from k40 import inkex
+from k40 import simplestyle
+from k40 import simpletransform
+from k40 import cubicsuperpath
+from k40 import cspsubdiv
 import traceback
 DEBUG = False
 
