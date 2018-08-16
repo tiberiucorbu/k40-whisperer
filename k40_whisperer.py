@@ -20,6 +20,14 @@
 version = '0.20'
 title_text = "K40 Whisperer V"+version
 
+try:
+    # This fixes an issue with cx_Freeze'd binary failing to do utf-8 encoding
+    # on Linux.
+    # TODO: This should be put into separate init script
+    import encodings
+except ImportError:
+    pass
+
 import sys
 import os
 import re

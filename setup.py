@@ -1,23 +1,20 @@
-# run this from the command line: python setup.py py2exe
+import sys
 
-from distutils.core import setup
+from cx_Freeze import setup, Executable
 
-try:
-    import py2exe
-except ImportError:
-    pass
+build_exe_options = {
+    "include_files": [
+        "assets/"
+        ],
+    "packages": ["PIL", "codecs"],
+    }
 
-setup(
-    options={
-        "py2exe": {
-            "compressed": 1, "optimize": 0,
-            "includes": ["lxml.etree", "lxml._elementpath", "gzip"],
-            }
-        },
-    zipfile=None,
-    windows=[{
-        "script":"k40_whisperer.py",
-        "icon_resources":[(0,"assets/scorchworks.ico"),(1,"assets/scorchworks.ico")]
-        }],
-    )
+base = None
+if sys.platform == "win32":
+    base = "Win32GUI"
 
+setup(name="K40-Whisperer",
+      version="0.21-beta",
+      description="Chinese K40 Laser control software",
+      executables=[Executable("k40_whisperer.py", base=base)],
+      options={"build_exe": build_exe_options})
