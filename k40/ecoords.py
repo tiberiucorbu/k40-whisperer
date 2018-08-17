@@ -59,10 +59,10 @@ class ECoord():
             ymin=min(ymin,y1,y2)
         self.bounds = (xmin,xmax,ymin,ymax)
 
-    def set_ecoords(self,ecoords,data_sorted=False):
+    def set_ecoords(self, ecoords, data_sorted=False):
         self.ecoords = ecoords
         self.computeEcoordsLen()
-        self.data_sorted=data_sorted
+        self.sorted = data_sorted
 
     def set_image(self,PIL_image):
         self.image = PIL_image

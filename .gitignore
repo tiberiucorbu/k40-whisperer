@@ -3,3 +3,4 @@ build
 .pytest_cache
 .cache
 *.swp
+.ropeproject

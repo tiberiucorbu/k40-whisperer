@@ -98,7 +98,6 @@ class Application(Frame):
         Frame.__init__(self, master)
         self.w = 780
         self.h = 490
-        frame = Frame(master, width= self.w, height=self.h)
         self.master = master
         self.x = -1
         self.y = -1
@@ -1501,87 +1500,87 @@ class Application(Frame):
 
     #####################################################################
     def make_raster_coords(self):
-            ecoords=[]
-            if (self.RengData.image != None):
-                cutoff=128
-                image_temp = self.RengData.image.convert("L")
+        ecoords=[]
+        if (self.RengData.image != None):
+            cutoff=128
+            image_temp = self.RengData.image.convert("L")
 
-                if self.mirror.get():
-                    image_temp = ImageOps.mirror(image_temp)
+            if self.mirror.get():
+                image_temp = ImageOps.mirror(image_temp)
 
-                if self.rotate.get():
-                    #image_temp = image_temp.rotate(90,expand=True)
-                    image_temp = self.rotate_raster(image_temp)
+            if self.rotate.get():
+                #image_temp = image_temp.rotate(90,expand=True)
+                image_temp = self.rotate_raster(image_temp)
 
-                Xscale = float(self.LaserXscale.get())
-                Yscale = float(self.LaserYscale.get())
-                if Xscale != 1.0 or Yscale != 1.0:
-                    wim,him = image_temp.size
-                    nw = int(wim*Xscale)
-                    nh = int(him*Yscale)
-                    image_temp = image_temp.resize((nw,nh))
-
-                if self.halftone.get():
-                    #start = time()
-                    ht_size_mils =  round( 1000.0 / float(self.ht_size.get()) ,1)
-                    npixels = int( round(ht_size_mils,1) )
-                    if npixels == 0:
-                        return
-                    wim,him = image_temp.size
-                    # Convert to Halftoning and save
-                    nw=int(wim / npixels)
-                    nh=int(him / npixels)
-                    image_temp = image_temp.resize((nw,nh))
-
-                    image_temp = self.convert_halftoning(image_temp)
-                    image_temp = image_temp.resize((wim,him))
-                    #print time()-start
-
-                if DEBUG:
-                    image_name = os.path.expanduser("~")+"/IMAGE.png"
-                    image_temp.save(image_name,"PNG")
-
-                Reng_np = image_temp.load()
+            Xscale = float(self.LaserXscale.get())
+            Yscale = float(self.LaserYscale.get())
+            if Xscale != 1.0 or Yscale != 1.0:
                 wim,him = image_temp.size
-                #######################################
+                nw = int(wim*Xscale)
+                nh = int(him*Yscale)
+                image_temp = image_temp.resize((nw,nh))
+
+            if self.halftone.get():
+                #start = time()
+                ht_size_mils =  round( 1000.0 / float(self.ht_size.get()) ,1)
+                npixels = int( round(ht_size_mils,1) )
+                if npixels == 0:
+                    return
+                wim,him = image_temp.size
+                # Convert to Halftoning and save
+                nw=int(wim / npixels)
+                nh=int(him / npixels)
+                image_temp = image_temp.resize((nw,nh))
+
+                image_temp = self.convert_halftoning(image_temp)
+                image_temp = image_temp.resize((wim,him))
+                #print time()-start
+
+            if DEBUG:
+                image_name = os.path.expanduser("~")+"/IMAGE.png"
+                image_temp.save(image_name,"PNG")
+
+            Reng_np = image_temp.load()
+            wim,him = image_temp.size
+            #######################################
+            x=0
+            y=0
+            loop=1
+
+            Raster_step = self.get_raster_step_1000in()
+            for i in range(0,him,Raster_step):
+                if i%100 ==0:
+                    self.statusMessage.set("Raster Engraving: Creating Scan Lines: %.1f %%" %( (100.0*i)/him ) )
+                    self.master.update()
+                if self.stop[0]==True:
+                    raise K40Exception("Action stopped by User.")
+                line = []
+                cnt=1
+                for j in range(1,wim):
+                    if (Reng_np[j,i] == Reng_np[j-1,i]):
+                        cnt = cnt+1
+                    else:
+                        laser = "U" if Reng_np[j-1,i] > cutoff else "D"
+                        line.append((cnt,laser))
+                        cnt=1
+                laser = "U" if Reng_np[j-1,i] > cutoff else "D"
+                line.append((cnt,laser))
+
+                y=(him-i)/1000.0
                 x=0
-                y=0
-                loop=1
+                rng = list(range(0,len(line),1))
 
-                Raster_step = self.get_raster_step_1000in()
-                for i in range(0,him,Raster_step):
-                    if i%100 ==0:
-                        self.statusMessage.set("Raster Engraving: Creating Scan Lines: %.1f %%" %( (100.0*i)/him ) )
-                        self.master.update()
-                    if self.stop[0]==True:
-                        raise K40Exception("Action stopped by User.")
-                    line = []
-                    cnt=1
-                    for j in range(1,wim):
-                        if (Reng_np[j,i] == Reng_np[j-1,i]):
-                            cnt = cnt+1
-                        else:
-                            laser = "U" if Reng_np[j-1,i] > cutoff else "D"
-                            line.append((cnt,laser))
-                            cnt=1
-                    laser = "U" if Reng_np[j-1,i] > cutoff else "D"
-                    line.append((cnt,laser))
+                for i in rng:
+                    seg = line[i]
+                    delta = seg[0]/1000.0
+                    if seg[1]=="D":
+                        loop=loop+1
+                        ecoords.append([x      ,y,loop])
+                        ecoords.append([x+delta,y,loop])
+                    x = x + delta
 
-                    y=(him-i)/1000.0
-                    x=0
-                    rng = list(range(0,len(line),1))
-
-                    for i in rng:
-                        seg = line[i]
-                        delta = seg[0]/1000.0
-                        if seg[1]=="D":
-                            loop=loop+1
-                            ecoords.append([x      ,y,loop])
-                            ecoords.append([x+delta,y,loop])
-                        x = x + delta
-
-            if ecoords!=[]:
-                self.RengData.set_ecoords(ecoords,data_sorted=True)
+        if ecoords!=[]:
+            self.RengData.set_ecoords(ecoords,data_sorted=True)
 
     def rotate_raster(self,image_in):
         wim,him = image_in.size
@@ -1680,7 +1679,7 @@ class Application(Frame):
         self.resetPath()
 
         self.DXF_FILE = filemname
-        dxf_import=DXF_CLASS()
+        dxf_import = DXFReader()
         segarc = 2
         try:
             fd = open(self.DXF_FILE)
@@ -1719,28 +1718,23 @@ class Application(Frame):
                     mcnt=1
             message_box("DXF Import:",msg_out)
 
-        if dxf_units=="Unitless":
-            d = UnitsDialog(root)
-            dxf_units = d.result
+        units_scale = {
+            "Inches": 1.0,
+            "Feet": 12.0,
+            "Miles": 5280.0*12.0,
+            "Millimeters": 1.0/25.4,
+            "Centimeters": 1.0/2.54,
+            "Meters": 1.0/254.0,
+            "Kilometers": 1.0/254000.0,
+            "Microinches": 1.0/1000000.0,
+            "Mils": 1.0/1000.0,
+        }
 
-        if dxf_units=="Inches":
-            dxf_scale = 1.0
-        elif dxf_units=="Feet":
-            dxf_scale = 12.0
-        elif dxf_units=="Miles":
-            dxf_scale = 5280.0*12.0
-        elif dxf_units=="Millimeters":
-            dxf_scale = 1.0/25.4
-        elif dxf_units=="Centimeters":
-            dxf_scale = 1.0/2.54
-        elif dxf_units=="Meters":
-            dxf_scale = 1.0/254.0
-        elif dxf_units=="Kilometers":
-            dxf_scale = 1.0/254000.0
-        elif dxf_units=="Microinches":
-            dxf_scale = 1.0/1000000.0
-        elif dxf_units=="Mils":
-            dxf_scale = 1.0/1000.0
+        if dxf_units == "Unitless":
+            dxf_units = UnitsDialog(root).result
+
+        if dxf_units in units_scale:
+            dxf_scale = units_scale[dxf_units]
         else:
             return
 
@@ -2424,66 +2418,56 @@ class Application(Frame):
             else:
                 FlipXoffset = 0
 
-            data=[]
-            egv_inst = egv(target=lambda s:data.append(s))
+            egv_data = []
+            egv_inst = egv(target=lambda s: egv_data.append(s))
 
-            if (operation_type=="Vector_Cut") and  (self.VcutData.ecoords!=[]):
-                num_passes = int(self.Vcut_passes.get())
-                Feed_Rate = float(self.Vcut_feed.get())*feed_factor
-                self.statusMessage.set("Vector Cut: Determining Cut Order....")
+            vector_data = {
+                'Vector_Cut': (self.VcutData, self.Vcut_passes, self.Vcut_feed),
+                'Vector_Eng': (self.VengData, self.Veng_passes, self.Veng_feed),
+                'Gcode_Cut': (self.GcodeData, self.Gcde_passes, None)
+                }
+
+            if operation_type in vector_data:
+                data, passes, feed = vector_data[operation_type]
+
+                passes = int(passes.get())
+
+                if feed is not None:
+                    feed = float(feed.get()) * feed_factor
+
+                self.statusMessage.set("Determining cut order...")
                 self.master.update()
-                if not self.VcutData.sorted and self.inside_first.get():
-                    self.VcutData.set_ecoords(self.optimize_paths(self.VcutData.ecoords),data_sorted=True)
+
+                if not data.sorted and self.inside_first.get():
+                    data.set_ecoords(self.optimize_paths(data.ecoords),data_sorted=True)
+
                 self.statusMessage.set("Generating EGV data...")
                 self.master.update()
 
-                Vcut_coords = self.VcutData.ecoords
-                if self.mirror.get() or self.rotate.get():
-                    Vcut_coords = self.mirror_rotate_vector_coords(Vcut_coords)
+                coords = data.ecoords
 
-                Vcut_coords,startx,starty = self.scale_vector_coords(Vcut_coords,startx,starty)
+                if self.mirror.get() or self.rotate.get():
+                    coords = self.mirror_rotate_vector_coords(coords)
+
+                coords, startx, starty = self.scale_vector_coords(coords, startx, starty)
+
+                if not coords:
+                    self.statusMessage.set("Nothing to engrave")
+                    return
 
                 egv_inst.make_egv_data(
-                                                Vcut_coords,                      \
-                                                startX=startx,                    \
-                                                startY=starty,                    \
-                                                Feed = Feed_Rate,                 \
-                                                board_name=self.board_name.get(), \
-                                                Raster_step = 0,                  \
-                                                update_gui=self.update_gui,       \
-                                                stop_calc=self.stop,              \
-                                                FlipXoffset=FlipXoffset
-                                                )
+                    coords,
+                    startX=startx,
+                    startY=starty,
+                    Feed=feed,
+                    board_name=self.board_name.get(),
+                    Raster_step=0,
+                    update_gui=self.update_gui,
+                    stop_calc=self.stop,
+                    FlipXoffset=FlipXoffset,
+                    )
 
-            if (operation_type=="Vector_Eng") and  (self.VengData.ecoords!=[]):
-                num_passes = int(self.Veng_passes.get())
-                Feed_Rate = float(self.Veng_feed.get())*feed_factor
-                self.statusMessage.set("Vector Engrave: Determining Cut Order....")
-                self.master.update()
-                if not self.VengData.sorted and self.inside_first.get():
-                    self.VengData.set_ecoords(self.optimize_paths(self.VengData.ecoords),data_sorted=True)
-                self.statusMessage.set("Generating EGV data...")
-                self.master.update()
-
-                Veng_coords = self.VengData.ecoords
-                if self.mirror.get() or self.rotate.get():
-                    Veng_coords = self.mirror_rotate_vector_coords(Veng_coords)
-
-                Veng_coords,startx,starty = self.scale_vector_coords(Veng_coords,startx,starty)
-
-                egv_inst.make_egv_data(
-                                                Veng_coords,                      \
-                                                startX=startx,                    \
-                                                startY=starty,                    \
-                                                Feed = Feed_Rate,                 \
-                                                board_name=self.board_name.get(), \
-                                                Raster_step = 0,                  \
-                                                update_gui=self.update_gui,       \
-                                                stop_calc=self.stop,              \
-                                                FlipXoffset=FlipXoffset
-                                                )
-
-            if (operation_type=="Raster_Eng") and  (self.RengData.ecoords!=[]):
+            elif operation_type == "Raster_Eng" and self.RengData.ecoords != []:
                 num_passes = int(self.Reng_passes.get())
                 Feed_Rate = float(self.Reng_feed.get())*feed_factor
                 Raster_step = self.get_raster_step_1000in()
@@ -2509,35 +2493,11 @@ class Application(Frame):
 
                 self.Reng=[]
 
-            if (operation_type=="Gcode_Cut") and (self.GcodeData.ecoords!=[]):
-
-                num_passes = int(self.Gcde_passes.get())
-                self.statusMessage.set("Generating EGV data...")
-                self.master.update()
-
-                Gcode_coords = self.GcodeData.ecoords
-                if self.mirror.get() or self.rotate.get():
-                    Gcode_coords = self.mirror_rotate_vector_coords(Gcode_coords)
-
-                Gcode_coords,startx,starty = self.scale_vector_coords(Gcode_coords,startx,starty)
-
-                egv_inst.make_egv_data(
-                                                Gcode_coords,                     \
-                                                startX=startx,                    \
-                                                startY=starty,                    \
-                                                Feed = None,                      \
-                                                board_name=self.board_name.get(), \
-                                                Raster_step = 0,                  \
-                                                update_gui=self.update_gui,       \
-                                                stop_calc=self.stop,              \
-                                                FlipXoffset=FlipXoffset
-                                                )
-
             self.master.update()
             if output_filename != None:
-                self.write_egv_to_file(data,output_filename)
+                self.write_egv_to_file(egv_data,output_filename)
             else:
-                self.send_egv_data(data, num_passes, output_filename)
+                self.send_egv_data(egv_data, num_passes, output_filename)
                 self.menu_View_Refresh()
         except MemoryError as e:
             raise K40Exception("Memory Error:  Out of Memory.")
