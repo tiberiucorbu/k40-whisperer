@@ -1,0 +1,3 @@
+-r requirements.txt
+cx_freeze
+pytest
