@@ -72,6 +72,7 @@ try:
 except:
     pass #Don't worry everything will still work
 
+from k40 import K40Exception
 from k40.egv import egv
 from k40.nano_library import K40Interface
 from k40.dxf import DXFReader
@@ -1391,9 +1392,9 @@ class Application(Frame):
         try:
             self.send_egv_data(EGV_data,n_passes)
         except MemoryError as e:
-            raise StandardError("Memory Error:  Out of Memory.")
+            raise K40Exception("Memory Error:  Out of Memory.")
             debug_message(traceback.format_exc())
-        except StandardError as e:
+        except K40Exception as e:
             msg1 = "Sending Data Stopped: "
             msg2 = "%s" %(e)
             if msg2 == "":
@@ -1430,7 +1431,7 @@ class Application(Frame):
                 svg_reader.parse(filename)
                 svg_reader.make_paths(txt2paths=True)
 
-        except StandardError as e:
+        except K40Exception as e:
             msg1 = "SVG file load failed: "
             msg2 = "%s" %(e)
             self.statusMessage.set((msg1+msg2).split("\n")[0] )
@@ -1553,7 +1554,7 @@ class Application(Frame):
                         self.statusMessage.set("Raster Engraving: Creating Scan Lines: %.1f %%" %( (100.0*i)/him ) )
                         self.master.update()
                     if self.stop[0]==True:
-                        raise StandardError("Action stopped by User.")
+                        raise K40Exception("Action stopped by User.")
                     line = []
                     cnt=1
                     for j in range(1,wim):
@@ -1662,7 +1663,7 @@ class Application(Frame):
                 for line in MSG:
                     Error_Text = Error_Text + line + "\n"
                     message_box("G-Code Messages", Error_Text)
-        except StandardError as e:
+        except K40Exception as e:
             msg1 = "G-Code Load Failed:  "
             msg2 = "Filename: %s" %(filename)
             msg3 = "%s" %(e)
@@ -1685,7 +1686,7 @@ class Application(Frame):
             fd = open(self.DXF_FILE)
             dxf_import.GET_DXF_DATA(fd,tol_deg=segarc)
             fd.close()
-        except StandardError as e:
+        except K40Exception as e:
             msg1 = "DXF Load Failed:"
             msg2 = "%s" %(e)
             self.statusMessage.set((msg1+msg2).split("\n")[0] )
@@ -2063,7 +2064,7 @@ class Application(Frame):
                 return True
             else:
                 return True
-        except StandardError as e:
+        except K40Exception as e:
             msg1 = "Rapid Move Failed: "
             msg2 = "%s" %(e)
             if msg2 == "":
@@ -2136,7 +2137,7 @@ class Application(Frame):
             else:
                 self.statusbar.configure( bg = 'yellow' )
                 self.statusMessage.set("No raster data to engrave")
-        except StandardError as e:
+        except K40Exception as e:
             msg1 = "Making Raster Data Stopped: "
             msg2 = "%s" %(e)
             self.statusMessage.set((msg1+msg2).split("\n")[0] )
@@ -2539,10 +2540,10 @@ class Application(Frame):
                 self.send_egv_data(data, num_passes, output_filename)
                 self.menu_View_Refresh()
         except MemoryError as e:
-            raise StandardError("Memory Error:  Out of Memory.")
+            raise K40Exception("Memory Error:  Out of Memory.")
             debug_message(traceback.format_exc())
 
-        except StandardError as e:
+        except K40Exception as e:
             msg1 = "Sending Data Stopped: "
             msg2 = "%s" %(e)
             if msg2 == "":
@@ -2571,11 +2572,11 @@ class Application(Frame):
     ##########################################################################
     def write_egv_to_file(self,data,fname):
         if len(data) == 0:
-            raise StandardError("No data available to write to file.")
+            raise K40Exception("No data available to write to file.")
         try:
             fout = open(fname,'w')
         except:
-            raise StandardError("Unable to open file ( %s ) for writing." %(fname))
+            raise K40Exception("Unable to open file ( %s ) for writing." %(fname))
         fout.write("Document type : LHYMICRO-GL file\n")
         fout.write("Creator-Software: K40 Whisperer\n")
 
@@ -2652,7 +2653,7 @@ class Application(Frame):
             else:
                 self.Unlock()
 
-        except StandardError as e:
+        except K40Exception as e:
             error_text = "%s" %(e)
             if "BACKEND" in error_text.upper():
                 error_text = error_text + " (libUSB driver not installed)"

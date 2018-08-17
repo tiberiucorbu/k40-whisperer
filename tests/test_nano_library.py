@@ -33,9 +33,9 @@ class Fake_dev:
         return [255,206,-1,-1,-1,-1] # 206 == self.OK
 
 # Test command sequences
-TEST_UNLOCK = map(ord, '\xa6\x00IS2PFFFFFFFFFFFFFFFFFFFFFFFFFF\xa6\x0f')
-TEST_HOME = map(ord, '\xa6\x00IPPFFFFFFFFFFFFFFFFFFFFFFFFFFF\xa6\xe4')
-TEST_ESTOP = map(ord, '\xa6\x00IFFFFFFFFFFFFFFFFFFFFFFFFFFFFF\xa6\x82')
+TEST_UNLOCK = list(map(ord, '\xa6\x00IS2PFFFFFFFFFFFFFFFFFFFFFFFFFF\xa6\x0f'))
+TEST_HOME = list(map(ord, '\xa6\x00IPPFFFFFFFFFFFFFFFFFFFFFFFFFFF\xa6\xe4'))
+TEST_ESTOP = list(map(ord, '\xa6\x00IFFFFFFFFFFFFFFFFFFFFFFFFFFFFF\xa6\x82'))
 
 class TestK40Interface(unittest.TestCase):
     def setUp(self):
@@ -64,7 +64,7 @@ class TestK40Interface(unittest.TestCase):
         self.object.reset()
 
     def test_crc(self):
-        line = map(ord, 'AK0FFFFFFFFFFFFFFFFFFFFFFFFFFF')
+        line = list(map(ord, 'AK0FFFFFFFFFFFFFFFFFFFFFFFFFFF'))
 
         # Do we get the expected CRC?
         self.assertEqual( nano_library._crc(line), 0xa4 )
@@ -87,7 +87,7 @@ class TestK40Interface(unittest.TestCase):
         data = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
         self.object.dev.expect = 'write'
-        self.object.send_data(map(ord, data))
+        self.object.send_data(list(map(ord, data)))
 
         packet_marker = '\xa6'
         packet_end = '\xa0'
@@ -97,11 +97,11 @@ class TestK40Interface(unittest.TestCase):
         packet_data2 += 'FFFFFFFF'  # fill data to a full packet size
 
         expect = packet_marker + '\x00' + packet_data1 + packet_marker
-        expect += chr(nano_library._crc(map(ord, packet_data1)))
+        expect += chr(nano_library._crc(list(map(ord, packet_data1))))
         expect += packet_end
 
         expect += packet_marker + '\x00' + packet_data2 + packet_marker
-        expect += chr(nano_library._crc(map(ord, packet_data2)))
+        expect += chr(nano_library._crc(list(map(ord, packet_data2))))
         expect += packet_end
 
         self.assertEqual(

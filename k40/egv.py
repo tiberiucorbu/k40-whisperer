@@ -25,11 +25,13 @@ import os
 from shutil import copyfile
 from math import *
 
+from bisect import bisect_left
+
+from k40 import K40Exception
+
 ##############################################################################
 # Linear Interpolation from Stack Overflow Answer
 # https://stackoverflow.com/questions/7343697/how-to-implement-linear-interpolation
-
-from bisect import bisect_left
 class Interpolate(object):
     def __init__(self, x_list, y_list):
         if any([y - x <= 0 for x, y in zip(x_list, x_list[1:])]):
@@ -142,7 +144,7 @@ class egv:
     def make_distance(self,dist_mils):
         dist_mils=float(dist_mils)
         if abs(dist_mils-round(dist_mils,0)) > 0.000001:
-            raise StandardError('Distance values should be integer value (inches*1000)')
+            raise K40Exception('Distance values should be integer value (inches*1000)')
         DIST=0.0
         code = []
         v122 = 255
@@ -165,7 +167,7 @@ class egv:
             code.append(ord(num_str[1]))
             code.append(ord(num_str[2]))
         else:
-            raise StandardError("Error in EGV make_distance_in(): dist_milsA=",dist_milsA)
+            raise K40Exception("Error in EGV make_distance_in(): dist_milsA=",dist_milsA)
         return code
     
     def make_dir_dist(self,dxmils,dymils,laser_on=False):
@@ -192,7 +194,7 @@ class egv:
             YCODE = self.DOWN
             
         if abs(dxmils-round(dxmils,0)) > 0.0 or abs(dymils-round(dymils,0)) > 0.0:
-            raise StandardError('Distance values should be integer value (inches*1000)')
+            raise K40Exception('Distance values should be integer value (inches*1000)')
 
         adx = abs(dxmils/1000.0)
         ady = abs(dymils/1000.0)
@@ -256,7 +258,7 @@ class egv:
             else:
                 error = max(DY-abs(dxmils),DX-abs(dymils))
             if error > 0:
-                raise StandardError("egv.py: Error delta =%f" %(error))
+                raise K40Exception("egv.py: Error delta =%f" %(error))
 
 
     def speed_code(self,Feed,B,M):
@@ -289,7 +291,7 @@ class egv:
                 diag_linterp = self.make_diagonal_speed_interpolator(board_name)
                 if Feed <= 240.0:
                     C4 = "%03d" %( floor(min(Feed/2.0+1,128)))
-                    C5 = "%06d" %( int(round(diag_linterp[Feed/2.0],0)) )
+                    C5 = "%06d" %( int(ceil(diag_linterp[Feed/2.0])) )
                 else:
                     C4 = "000"
                     C5 = "000000"
@@ -382,7 +384,7 @@ class egv:
 
         #################################################################
         else:
-            raise StandardError("Unknown Board Designation: %s" %(board_name))
+            raise K40Exception("Unknown Board Designation: %s" %(board_name))
         
         for c in speed_text:
             speed.append(ord(c))
@@ -618,7 +620,6 @@ class egv:
             variable_feed_scale = 25.4/60.0
             Feed = round(ecoords_in[0][3]*variable_feed_scale,2)
             Spindle = False
-            
         speed = self.make_speed(Feed,board_name=board_name,Raster_step=Raster_step)
         
         self.write(ord("I"))
@@ -626,7 +627,7 @@ class egv:
             self.write(code)
         
         if Raster_step==0:
-            lastx,lasty,last_loop = self.ecoord_adj(ecoords_in[0],scale,FlipXoffset)  
+            lastx,lasty,last_loop = self.ecoord_adj(ecoords_in[0],scale,FlipXoffset)
             self.make_dir_dist(lastx-startX,lasty-startY)
             self.flush(laser_on=False)
             self.write(ord("N"))
@@ -643,7 +644,7 @@ class egv:
                 e0,e1,e2                = self.ecoord_adj(ecoords_in[i]  ,scale,FlipXoffset)
                 update_gui("Generating EGV Data: %.1f%%" %(100.0*float(i)/float(len(ecoords_in))))
                 if stop_calc[0]==True:
-                    raise StandardError("Action Stopped by User.")
+                    raise K40Exception("Action Stopped by User.")
             
                 if ( e2  == last_loop) and (not laser):
                     laser = True
@@ -736,7 +737,7 @@ class egv:
                     scan.append([e0,e1,e2])
                 update_gui("Generating EGV Data: %.1f%%" %(100.0*float(cnt)/float(len(scanline))))
                 if stop_calc[0]==True:
-                    raise StandardError("Action Stopped by User.")
+                    raise K40Exception("Action Stopped by User.")
                 cnt = cnt+1
                 ######################################
                 ## Flip direction and reset loop    ##

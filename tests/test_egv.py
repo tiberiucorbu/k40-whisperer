@@ -5,7 +5,7 @@
 
 import unittest
 
-from k40 import egv
+from k40 import egv, K40Exception
 
 class TestegvClass(unittest.TestCase):
     def setUp(self):
@@ -65,7 +65,7 @@ class TestegvClass(unittest.TestCase):
 #        )
 
     def test_make_distance(self):
-        with self.assertRaises(StandardError):
+        with self.assertRaises(K40Exception):
             self.object.make_distance(1.1)
 
         # What a strange number coding.  I guess they had never heard of
@@ -110,9 +110,9 @@ class TestegvClass(unittest.TestCase):
             self.assertEqual( got, test['expect'] )
 
     def test_make_cut_line(self):
-        with self.assertRaises(StandardError):
+        with self.assertRaises(K40Exception):
             self.object.make_cut_line(1.5,1,Spindle=True)
-        with self.assertRaises(StandardError):
+        with self.assertRaises(K40Exception):
             self.object.make_cut_line(1,1.5,Spindle=True)
 
         tests = [
@@ -139,7 +139,7 @@ class TestegvClass(unittest.TestCase):
     def test_make_speed(self):
         with self.assertRaises(TypeError):
             self.object.make_speed()
-        with self.assertRaises(StandardError):
+        with self.assertRaises(K40Exception):
             self.object.make_speed(board_name='larry')
         with self.assertRaises(ZeroDivisionError):
             self.object.make_speed(Feed=0)

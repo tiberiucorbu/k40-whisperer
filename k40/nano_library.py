@@ -24,6 +24,7 @@ import math
 import usb.core
 import usb.util
 
+from k40 import K40Exception
 from k40.egv import egv
 
 
@@ -127,7 +128,7 @@ class K40Interface(object):
         else:
             msg = ("Too Many Transmission Errors ({:d} Status Timeouts)"
                    .format(self.n_timeouts))
-            raise StandardError(msg)
+            raise K40Exception(msg)
 
         response = None
         try:
@@ -194,7 +195,7 @@ class K40Interface(object):
         else:
             msg = "Too many transmission errors ({})".format(retry)
             update_gui(msg)
-            raise StandardError(msg)
+            raise K40Exception(msg)
 
     def wait_for_finish(self, update_gui=lambda x: None):
         while True:
@@ -203,7 +204,7 @@ class K40Interface(object):
             if resp == _RESP_COMPLETE:
                 return
             elif resp is None:
-                raise StandardError("The laser cutter stopped responding after"
+                raise K40Exception("The laser cutter stopped responding after"
                                     " sending data was complete.")
             else:
                 update_gui("Waiting for laser to finish")
@@ -225,13 +226,13 @@ class K40Interface(object):
 
         self.dev = usb.core.find(idVendor=0x1a86, idProduct=0x5512)
         if self.dev is None:
-            raise StandardError("Laser USB Device not found.")
+            raise K40Exception("Laser USB Device not found.")
         logger.debug('Device: {}'.format(self.dev))
 
         try:
             self.dev.set_configuration()
         except:
-            raise StandardError("Unable to set USB Device configuration.")
+            raise K40Exception("Unable to set USB Device configuration.")
 
         cfg = self.dev.get_active_configuration()
         logger.debug('Configuration: {}'.format(cfg))
@@ -245,7 +246,7 @@ class K40Interface(object):
 
         endpoint = usb.util.find_descriptor(interface, custom_match=match)
         if endpoint is None:
-            raise StandardError("Unable to match the USB 'OUT' endpoint.")
+            raise K40Exception("Unable to match the USB 'OUT' endpoint.")
         logger.debug('Endpoint: {}'.format(endpoint))
 
         ctrlxfer = self.dev.ctrl_transfer(0x40, 177, 0x0102, 0, 0, 2000)

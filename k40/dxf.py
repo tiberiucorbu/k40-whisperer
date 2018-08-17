@@ -18,6 +18,10 @@
 
 """
 from math import *
+
+from k40 import K40Exception
+
+
 Zero       = 0.00001
 
 ####################################################
@@ -155,9 +159,9 @@ class BSplineClass:
 
         # Incoming inspection, fit the upper node number, etc.
         if  self.Knots_len< self.degree+1:
-            raise StandardError("SPLINE: degree greater than number of control points.")
+            raise K40Exception("SPLINE: degree greater than number of control points.")
         if self.Knots_len != (self.CPts_len + self.degree+1):
-            raise StandardError("SPLINE: Knot/Control Point/degree number error.")
+            raise K40Exception("SPLINE: Knot/Control Point/degree number error.")
 
     #Modified Version of Algorithm A3.2 from "THE NURBS BOOK" pg.93
     def bspline_ders_evaluate(self,n=0,u=0):
