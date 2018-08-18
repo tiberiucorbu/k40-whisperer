@@ -3716,20 +3716,23 @@ class UnitsDialog(tkSimpleDialog.Dialog):
 ################################################################################
 #                          Startup Application                                 #
 ################################################################################
+def main():
+    root = Tk()
+    app = Application(root)
+    app.master.title(title_text)
+    app.master.iconname("K40")
+    app.master.minsize(800,560) #800x600 min
 
-root = Tk()
-app = Application(root)
-app.master.title(title_text)
-app.master.iconname("K40")
-app.master.minsize(800,560) #800x600 min
+    try:
+        app.master.iconbitmap(bitmap="@emblem64")
+    except:
+        pass
 
-try:
-    app.master.iconbitmap(bitmap="@emblem64")
-except:
-    pass
+    if LOAD_MSG != "":
+        message_box("K40 Whisperer",LOAD_MSG)
+    debug_message("Debuging is turned on.")
 
-if LOAD_MSG != "":
-    message_box("K40 Whisperer",LOAD_MSG)
-debug_message("Debuging is turned on.")
+    root.mainloop()
 
-root.mainloop()
+if __name__ == "__main__":
+    main()
