@@ -78,7 +78,7 @@ from k40.nano_library import K40Interface
 from k40.dxf import DXFReader
 from k40.svg import SVGReader, SVGTextException
 from k40.gcode import GCodeReader
-from k40.interpolate import interpolate
+from k40.interpolate import Interpolate
 from k40.ecoords import ECoord
 
 
@@ -1631,7 +1631,7 @@ class Application(Frame):
         if w > 0:
             x,y = self.generate_bezier(M1,M2,w)
 
-            interp = interpolate(x, y) # Set up interpolate class
+            interp = Interpolate(x, y) # Set up interpolate class
             val_map=[]
             # Map Bezier Curve to values between 0 and 255
             for val in range(0,256):
@@ -2961,18 +2961,7 @@ class Application(Frame):
                     self.PreviewCanvas_frame.place(x=Xvert_sep, y=10)
                     self.separator_vert.place_forget()
 
-                self.Set_Input_States()
-
             self.Plot_Data()
-
-    def Recalculate_RQD_Click(self, event):
-        self.menu_View_Refresh()
-
-    def Set_Input_States(self):
-        pass
-
-    def Set_Input_States_Event(self,event):
-        self.Set_Input_States()
 
     def Set_Input_States_RASTER(self):
         if self.halftone.get():
@@ -2995,10 +2984,6 @@ class Application(Frame):
             self.bezier_M2_Slider.configure(state="disabled")
             self.Label_bezier_weight.configure(state="disabled")
             self.bezier_weight_Slider.configure(state="disabled")
-
-
-    def Set_Input_States_RASTER_Event(self,event):
-        self.Set_Input_States_RASTER()
 
     def Imaging_Free(self,image_in,bg="#ffffff"):
         image_in = image_in.convert('L')
