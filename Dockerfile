@@ -4,7 +4,7 @@ WORKDIR /usr/src/app
 
 COPY requirements.txt ./
 
-RUN apk add --no-cache gcc libxml2-dev libxslt-dev
+RUN apk add --no-cache gcc libxml2-dev libxslt-dev libc6-dev
 
 RUN pip install --no-cache-dir -r requirements.txt
 
