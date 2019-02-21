@@ -11,8 +11,13 @@ A python based K40 laser software
 
 ## Build
 
-The pro
+The project was initialy build using shell scripts, there is no a Dockerfile that is supposed to build test and release the project.
+
+You need docker for that. from the command line run:
+
+    docker build -t k40-wishperer .
+
 
 ## Test
 
-Run python test.py from the project directory.
+Run `python test.py` from the project directory.
