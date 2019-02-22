@@ -3,7 +3,8 @@ from unittest import TestSuite
 
 
 def load_tests(loader, tests, pattern):
-    ''' Discover and load all unit tests in all files named ``test_*.py`` in ``./``
+    '''
+    Discover and load all unit tests in all files named ``test_*.py`` in ``./``
     '''
     suite = TestSuite()
     for all_test_suite in unittest.defaultTestLoader.discover('./', pattern='test_*.py'):
