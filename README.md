@@ -4,19 +4,29 @@ A python based K40 laser software
 
 ## Roadmap 
 
- - Test             [development]
- - Extract api    
+ - Test and Setup    [development]
+ - Extract API    
  - Add websocket  
  - create web-ui
 
-## Build
+## Build setup
 
-The project was initialy build using shell scripts, there is no a Dockerfile that is supposed to build test and release the project.
+Create a virtual environment using python 3.7 
 
-You need docker for that. from the command line run:
+    $ virtualenv -p /usr/bin/python3.7 venv
 
-    docker build -t k40-wishperer .
+Activate the virtual environment
 
+    $ ./venv/Scripts/activate
+
+After running activate your shell should have a (venv) prefix
+
+Install requirements
+
+    $ pip install -r requirements
+
+
+$ ./venv/Scripts/deactivate
 
 ## Test
 

@@ -1,10 +1,12 @@
-FROM python:2.7-alpine
+FROM python:3.7-alpine
 
 WORKDIR /usr/src/app
 
+RUN addgroup -S lasercutter  && adduser -S -G lasercutter lasercutter
+
 COPY requirements.txt ./
 
-RUN apk add --no-cache gcc libxml2-dev libxslt-dev libc-dev \                       
+RUN apk add --no-cache gcc libxml2-dev libxslt-dev libc-dev \
                        # Pillow dependencies
                        jpeg-dev \
                        zlib-dev \
@@ -21,4 +23,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-CMD [ "python", "./test.py" ]
+RUN python ./test.py
+
+CMD [ "python", "./k40_wishperer.py" ]
