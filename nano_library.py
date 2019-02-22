@@ -2,7 +2,7 @@
 '''
 This script comunicated with the K40 Laser Cutter.
 
-Copyright (C) 2017 Scorch www.scorchworks.com
+Copyright (C) 2017-2019 Scorch www.scorchworks.com
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -28,8 +28,9 @@ import struct
 import os
 from shutil import copyfile
 from egv import egv
-import time
 import traceback
+from windowsinhibitor import WindowsInhibitor
+from time import time
 
 ##############################################################################
 
@@ -151,6 +152,9 @@ class K40_CLASS:
         if update_gui == None:
             update_gui = self.none_function
 
+        NoSleep = WindowsInhibitor()
+        NoSleep.inhibit()
+
         blank   = [166,0,70,70,70,70,70,70,70,70,70,70,70,70,70,70,70,70,70,70,70,70,70,70,70,70,70,70,70,70,70,70,166,0]
         packets = []
         packet  = blank[:]
@@ -167,21 +171,27 @@ class K40_CLASS:
                     data[-4]=ord("F")
                 else:
                     data[-4]=ord("@")
-                
+            timestamp=0   
             for i in range(istart,len_data):
                 if cnt > 31:
                     packet[-1] = self.OneWireCRC(packet[1:len(packet)-2])
+                    stamp=int(3*time()) #update every 1/3 of a second
                     if not preprocess_crc:
                         self.send_packet_w_error_checking(packet,update_gui,stop_calc)
-                        update_gui("Sending Data to Laser = %.1f%%" %(100.0*float(i)/float(len_data)))
+                        if (stamp != timestamp):
+                            timestamp=stamp #interlock
+                            update_gui("Sending Data to Laser = %.1f%%" %(100.0*float(i)/float(len_data)))
                     else:
                         packets.append(packet)
-                        update_gui("Calculating CRC data and Generate Packets: %.1f%%" %(100.0*float(i)/float(len_data)))
+                        if (stamp != timestamp):
+                            timestamp=stamp #interlock
+                            update_gui("Calculating CRC data and Generate Packets: %.1f%%" %(100.0*float(i)/float(len_data)))
                     packet = blank[:]
                     cnt = 2
                     
                     if stop_calc[0]==True:
-                        raise StandardError("Action Stopped by User.")
+                        NoSleep.uninhibit()
+                        raise Exception("Action Stopped by User.")
                 packet[cnt]=data[i]
                 cnt=cnt+1
         packet[-1]=self.OneWireCRC(packet[1:len(packet)-2])
@@ -199,6 +209,7 @@ class K40_CLASS:
         ##############################################################
         if wait_for_laser:
             self.wait_for_laser_to_finish(update_gui,stop_calc)
+        NoSleep.uninhibit()
 
 
     def send_packet_w_error_checking(self,line,update_gui=None,stop_calc=None):
@@ -208,7 +219,7 @@ class K40_CLASS:
             if stop_calc[0]:
                 msg="Action Stopped by User."
                 update_gui(msg,bgcolor='red')
-                raise StandardError(msg)
+                raise Exception(msg)
             try:
                 self.send_packet(line)
             except:
@@ -221,7 +232,7 @@ class K40_CLASS:
                     gui_active = update_gui(msg,bgcolor='red')
                     if not gui_active:
                         msg = "The laser cutter is not responding after %d attempts." %(timeout_cnt)
-                        raise StandardError(msg)
+                        raise Exception(msg)
                 continue
             ######################################
             response = self.say_hello()
@@ -241,7 +252,7 @@ class K40_CLASS:
                     gui_active = update_gui(msg,bgcolor='red')
                     if not gui_active:
                         msg = "There are many data transmission errors (%d)."  %(crc_cnt)
-                        raise StandardError(msg)
+                        raise Exception(msg)
                 continue
             elif response == None:
                 # The controller board is not reporting status. but we will
@@ -261,14 +272,14 @@ class K40_CLASS:
                 break
             elif response == None:
                 msg = "The laser cutter stopped responding after sending data was complete."
-                raise StandardError(msg)
+                raise Exception(msg)
             else: #assume: response == self.OK:
                 msg = "Waiting for the laser to finish."
                 update_gui(msg)
             if stop_calc[0]:
                 msg="Action Stopped by User."
                 update_gui(msg,bgcolor='red')
-                raise StandardError(msg)
+                raise Exception(msg)
 
 
     def send_packet(self,line):
@@ -289,7 +300,7 @@ class K40_CLASS:
         # find the device
         self.dev = usb.core.find(idVendor=0x1a86, idProduct=0x5512)
         if self.dev is None:
-            raise StandardError("Laser USB Device not found.")
+            raise Exception("Laser USB Device not found.")
             #return "Laser USB Device not found."
 
         if verbose:
@@ -301,7 +312,7 @@ class K40_CLASS:
             self.dev.set_configuration()
         except:
             #return "Unable to set USB Device configuration."
-            raise StandardError("Unable to set USB Device configuration.")
+            raise Exception("Unable to set USB Device configuration.")
 
         # get an endpoint instance
         cfg = self.dev.get_active_configuration()
@@ -320,7 +331,7 @@ class K40_CLASS:
                 usb.util.endpoint_direction(e.bEndpointAddress) == \
                 usb.util.ENDPOINT_OUT)
         if ep == None:
-            raise StandardError("Unable to match the USB 'OUT' endpoint.")
+            raise Exception("Unable to match the USB 'OUT' endpoint.")
         if verbose:
             print ("-------------- ep --------------")
             print (ep)
