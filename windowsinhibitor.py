@@ -41,7 +41,7 @@ class WindowsInhibitor:
             return False
 
 
-            
+
 if __name__ == "__main__":
     import time
     osSleep = WindowsInhibitor()
@@ -51,6 +51,6 @@ if __name__ == "__main__":
     while d_time < 20:
         time.sleep(5)
         d_time = time.time()-t_init
-        print d_time
+        print(d_time)
     if osSleep:
         print("stop no sleep = ",osSleep.uninhibit())
