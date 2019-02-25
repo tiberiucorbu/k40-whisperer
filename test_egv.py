@@ -62,3 +62,18 @@ class TestEgv(TestCase):
         self.egv.flush(laser_on)
         distance_output = self.make_distance(distance)
         self.assertEqual(self.captured_data, [DIRECTIONS[direction_index]] + distance_output)
+
+    def test_make_cut_line(self):
+        dx = randint(-10000, 10000)
+        dy = randint(-10000, 10000)
+        self.egv.make_cut_line(dx, dy, True)
+        self.egv.flush(True)
+        # Do assertions
+
+    def test_compute_horizontal_direction(self):
+        self.assertEqual(self.egv.compute_x_axis_direction(1), self.egv.RIGHT)
+        self.assertEqual(self.egv.compute_x_axis_direction(-1), self.egv.LEFT)
+
+    def test_assert_integer_value(self):
+        random = randint(-100, 100) / 1000
+        self.assertRaises(Exception, self.egv.assert_integer_value, random)
