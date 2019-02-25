@@ -21,7 +21,7 @@ Activate the virtual environment
 
 After running activate your shell should have a (venv) prefix
 
-Install requirements
+Now you can install the requirements
 
     $ pip install -r requirements
 
