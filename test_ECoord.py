@@ -53,7 +53,7 @@ class TestECoord(TestCase):
         self.assertEqual(self.ecoord.len, 0)
 
     def test_set_ecoords(self):
-        self.ecoord.reset();
+        self.ecoord.reset()
         self.ecoord.set_ecoords(EXAMPLE_ECOORDS)
         self.assertEqual(self.ecoord.ecoords, EXAMPLE_ECOORDS)
         self.assertEqual(self.ecoord.bounds, (3, 13, 4, 14))
