@@ -23,7 +23,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-RUN python setup.py py2exe
 RUN python -m unittest discover -s ./ -p 'test_*.py'
 
 CMD [ "python", "./k40_wishperer.py" ]
