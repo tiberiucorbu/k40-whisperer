@@ -1,5 +1,6 @@
-import os
 import ctypes
+import os
+
 
 class WindowsInhibitor:
     '''
@@ -8,15 +9,15 @@ class WindowsInhibitor:
     API documentation:
     https://msdn.microsoft.com/en-us/library/windows/desktop/aa373208(v=vs.85).aspx
     '''
-    ES_CONTINUOUS        = 0x80000000
-    ES_SYSTEM_REQUIRED   = 0x00000001
+    ES_CONTINUOUS = 0x80000000
+    ES_SYSTEM_REQUIRED = 0x00000001
     ES_AWAYMODE_REQUIRED = 0x00000040
 
     def __init__(self):
         pass
 
     def inhibit(self):
-        if os.name == 'nt': #Prevent Windows from going to sleep
+        if os.name == 'nt':  # Prevent Windows from going to sleep
             try:
                 ctypes.windll.kernel32.SetThreadExecutionState(
                     WindowsInhibitor.ES_CONTINUOUS | \
@@ -29,8 +30,8 @@ class WindowsInhibitor:
 
     def uninhibit(self):
         import ctypes
-        #print("")
-        if os.name == 'nt': #Allow Windows to go to sleep
+        # print("")
+        if os.name == 'nt':  # Allow Windows to go to sleep
             try:
                 ctypes.windll.kernel32.SetThreadExecutionState(
                     WindowsInhibitor.ES_CONTINUOUS)
@@ -41,16 +42,16 @@ class WindowsInhibitor:
             return False
 
 
-
 if __name__ == "__main__":
     import time
+
     osSleep = WindowsInhibitor()
-    print("no sleep = ",osSleep.inhibit())
-    t_init=time.time()
-    d_time=0
+    print("no sleep = ", osSleep.inhibit())
+    t_init = time.time()
+    d_time = 0
     while d_time < 20:
         time.sleep(5)
-        d_time = time.time()-t_init
+        d_time = time.time() - t_init
         print(d_time)
     if osSleep:
-        print("stop no sleep = ",osSleep.uninhibit())
+        print("stop no sleep = ", osSleep.uninhibit())
