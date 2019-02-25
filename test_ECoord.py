@@ -1,7 +1,7 @@
 from math import sqrt
 from unittest import TestCase
 
-from k40_whisperer import ECoord
+from ecoords import ECoord
 
 EXAMPLE_ECOORDS = [[1, 2, 1], [3, 4, 1], [7, 8, 2], [9, 10, 2], [11, 12, 3], [13, 14, 3]]
 
