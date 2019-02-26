@@ -1,0 +1,10 @@
+{
+  "name": "@k40-scorchworks/web-interface",
+  "version": "1.0.0",
+  "dependencies": {
+    "lit-element": "2.0.1"
+  },
+  "devDependencies": {
+    "@webcomponents/webcomponentsjs": "^2.2.7"
+  }
+}
