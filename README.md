@@ -30,4 +30,4 @@ $ ./venv/Scripts/deactivate
 
 ## Test
 
-Run `python test.py` from the project directory.
+Run `python -m unittest discover -s ./ -p 'test_*.py'` from the project directory.
