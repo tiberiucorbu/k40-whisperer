@@ -1,4 +1,4 @@
-import {css, html, LitElement} from 'https://unpkg.com/lit-element/lit-element.js?module';
+import {css, html, LitElement} from 'lit-element';
 
 export class K40Layout extends LitElement {
 
@@ -13,7 +13,7 @@ export class K40Layout extends LitElement {
             #main {
                 flex-grow : 1;
             }
-            ::slotted([aside]) {
+            slot[name='aside']::slotted(*) {
                 height: 100%;
                 display:block;
             }
