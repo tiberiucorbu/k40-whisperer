@@ -40,7 +40,7 @@ setup(
     author="Tiberiu CORBU",
     author_email="hello@tiberiucorbu.ro",
     description="K40 Usb Python facade",
-    license="PSF",
+    license="GPLv3",
     keywords="k40 laser cutter usb facade",
     url="https://github.com/tiberiucorbu/k40-socket-bridge",  # project home page, if any
     project_urls={
