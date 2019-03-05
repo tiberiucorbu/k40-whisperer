@@ -4,9 +4,9 @@ import socketio
 sio = socketio.Server()
 
 
-# app = socketio.WSGIApp(sio, static_files={
-#     '/': {'content_type': 'text/html', 'filename': 'index.html'}
-# })
+app = socketio.WSGIApp(sio, static_files={
+
+})
 
 @sio.on('connect')
 def connect(sid, environ):
