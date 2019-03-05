@@ -20,8 +20,8 @@
 import logging
 from typing import List
 
-from command.k40_base_command import K40BaseCommand
-from connection.k40_usb_connection import K40UsbConnectionManager
+from k40usb.command.k40_base_command import K40BaseCommand
+from k40usb.connection import K40UsbConnectionManager
 
 STATUS_COMMAND_ID = 0xA0
 

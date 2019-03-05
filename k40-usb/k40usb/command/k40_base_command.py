@@ -1,7 +1,7 @@
 #!/usr/bin/python
 """
     Copyright (C) <2019>  <@tiberiucorbu>
-    
+
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
@@ -19,7 +19,7 @@
 
 from typing import TypeVar, List
 
-from connection.k40_usb_connection import K40UsbConnectionManager
+from k40usb.connection import K40UsbConnectionManager
 
 RESPONSE = TypeVar('T')
 

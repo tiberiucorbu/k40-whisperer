@@ -23,7 +23,7 @@ from unittest.mock import patch, Mock
 
 from usb.util import ENDPOINT_OUT
 
-from connection.k40_usb_connection import K40UsbConnectionManager, USB_ID_VENDOR, USB_ID_PRODUCT
+from k40usb.connection import K40UsbConnectionManager, USB_ID_VENDOR, USB_ID_PRODUCT
 
 descriptor = namedtuple('USBDescriptor', ['bEndpointAddress'])
 logging.basicConfig(level=logging.DEBUG)
