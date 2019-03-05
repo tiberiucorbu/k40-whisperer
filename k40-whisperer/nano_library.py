@@ -19,26 +19,21 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 import logging
-
-try:
-    import usb.core
-    import usb.util
-except:
-    print("Unable to load USB library (Sending data to Laser will not work.)")
 import os
+
+import k40usb
+from time import time
+
 from egv import egv
 from windowsinhibitor import WindowsInhibitor
-from time import time
 
 
 ##############################################################################
 
 class K40_CLASS:
     def __init__(self):
-        self.dev = None
+        self.connection = k40usb.connection.K40UsbConnectionManager()
         self.n_timeouts = 10
-        self.timeout = 200  # Time in milliseconds
-        self.write_addr = 0x2  # Write address
         self.read_addr = 0x82  # Read address
         self.read_length = 168
 
@@ -74,7 +69,7 @@ class K40_CLASS:
         read_cnt = 0
         while response == None and read_cnt < status_timeouts:
             try:
-                response = self.dev.read(self.read_addr, self.read_length, self.timeout)
+                response = self.connection.read()
             except:
                 response = None
                 read_cnt = read_cnt + 1
@@ -118,11 +113,10 @@ class K40_CLASS:
         self.send_packet(self.home)
 
     def reset_usb(self):
-        self.dev.reset()
+        self.connection.reset()
 
     def release_usb(self):
-        usb.util.dispose_resources(self.dev)
-        self.dev = None
+        self.connection.release_usb()
 
     #######################################################################
     #  The one wire CRC algorithm is derived from the OneWire.cpp Library
@@ -188,7 +182,7 @@ class K40_CLASS:
                         if (stamp != timestamp):
                             timestamp = stamp  # interlock
                             update_gui("Calculating CRC data and Generate Packets: %.1f%%" % (
-                                        100.0 * float(i) / float(len_data)))
+                                    100.0 * float(i) / float(len_data)))
                     packet = blank[:]
                     cnt = 2
 
@@ -283,7 +277,8 @@ class K40_CLASS:
                 raise Exception(msg)
 
     def send_packet(self, line):
-        self.dev.write(self.write_addr, line, self.timeout)
+        self.connection.ensure_connection()
+        self.connection.write(line[0], line[1:])
 
     def rapid_move(self, dxmils, dymils):
         if (dxmils != 0 or dymils != 0):
@@ -292,58 +287,8 @@ class K40_CLASS:
             egv_inst.make_move_data(dxmils, dymils)
             self.send_data(data, wait_for_laser=False)
 
-    def initialize_device(self, verbose=False):
-        try:
-            self.release_usb()
-        except:
-            pass
-        # find the device
-        self.dev = usb.core.find(idVendor=0x1a86, idProduct=0x5512)
-        if self.dev is None:
-            raise Exception("Laser USB Device not found.")
-            # return "Laser USB Device not found."
-
-        if verbose:
-            print("-------------- dev --------------")
-            print(self.dev)
-        # set the active configuration. With no arguments, the first
-        # configuration will be the active one
-        try:
-            self.dev.set_configuration()
-        except:
-            # return "Unable to set USB Device configuration."
-            raise Exception("Unable to set USB Device configuration.")
-
-        # get an endpoint instance
-        cfg = self.dev.get_active_configuration()
-        if verbose:
-            print("-------------- cfg --------------")
-            print(cfg)
-        intf = cfg[(0, 0)]
-        if verbose:
-            print("-------------- intf --------------")
-            print(intf)
-        ep = usb.util.find_descriptor(
-            intf,
-            # match the first OUT endpoint
-            custom_match= \
-                lambda e: \
-                    usb.util.endpoint_direction(e.bEndpointAddress) == \
-                    usb.util.ENDPOINT_OUT)
-        if ep == None:
-            raise Exception("Unable to match the USB 'OUT' endpoint.")
-        if verbose:
-            print("-------------- ep --------------")
-            print(ep)
-        # self.dev.clear_halt(ep)
-        # print self.dev.get_active_configuration()
-        #               dev.ctrl_transfer(bmRequestType, bRequest, wValue=0, wIndex=0, data_or_wLength = None, 2000)
-        ctrlxfer = self.dev.ctrl_transfer(0x40, 177, 0x0102, 0, 0, 2000)
-        if verbose:
-            print("---------- ctrlxfer ------------")
-            print(ctrlxfer)
-
-        # return True
+    def initialize_device(self):
+        self.connection.connect()
 
     def hex2dec(self, hex_in):
         # format of "hex_in" is ["40","e7"]

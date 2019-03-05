@@ -1,5 +1,7 @@
 #!/usr/bin/python
 """
+    Setup k40 usb package
+
     Copyright (C) <2019>  <@tiberiucorbu>
 
     This program is free software: you can redistribute it and/or modify
@@ -16,18 +18,21 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 """
-
 from setuptools import setup, find_packages
 
+with open('README.md', 'r') as f:
+    long_description = f.read()
+with open('requirements.txt', 'r') as f:
+    requirements = f.read().splitlines()
+
 setup(
-    name="k40-usb",
+    name="k40usb",
     version="0.0.1",
     packages=find_packages(),
-    scripts=['main/main.py'],
+    # scripts=['main/main.py'],
 
-    # Project uses reStructuredText, so ensure that the docutils get
     # installed or upgraded on the target machine
-    # install_requires=['docutils>=0.3'],
+    install_requires=requirements,
 
     package_data={
         # If any package contains *.txt or *.rst files, include them:
@@ -40,14 +45,23 @@ setup(
     author="Tiberiu CORBU",
     author_email="hello@tiberiucorbu.ro",
     description="K40 Usb Python facade",
-    license="PSF",
+    license="GPL-3.0",
     keywords="k40 laser cutter usb facade",
     url="https://github.com/tiberiucorbu/k40-socket-bridge",  # project home page, if any
     project_urls={
         "Bug Tracker": "https://github.com/tiberiucorbu/k40-socket-bridge/issues",
         "Documentation": "https://github.com/tiberiucorbu/k40-socket-bridge",
         "Source Code": "https://github.com/tiberiucorbu/k40-socket-bridge",
-    }
+    },
+    long_description=long_description,
+    long_description_content_type="text/markdown",
+    include_package_data=True,
+    zip_safe=False,
+    classifiers=[
+        "Programming Language :: Python :: 3",
+        "License :: OSI Approved :: GPL-3.0 License",
+        "Operating System :: OS Independent",
+    ],
 
     # could also include long_description, download_url, classifiers, etc.
 )

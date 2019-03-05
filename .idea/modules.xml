@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/k40-socket-bridge.iml" filepath="$PROJECT_DIR$/.idea/k40-socket-bridge.iml" />
+      <module fileurl="file://$PROJECT_DIR$/k40-socket-server/k40-socket-server.iml" filepath="$PROJECT_DIR$/k40-socket-server/k40-socket-server.iml" />
+      <module fileurl="file://$PROJECT_DIR$/k40-usb/k40-usb.iml" filepath="$PROJECT_DIR$/k40-usb/k40-usb.iml" />
+      <module fileurl="file://$PROJECT_DIR$/k40-web-interface/k40-web-interface.iml" filepath="$PROJECT_DIR$/k40-web-interface/k40-web-interface.iml" />
+      <module fileurl="file://$PROJECT_DIR$/k40-whisperer/k40-whisperer.iml" filepath="$PROJECT_DIR$/k40-whisperer/k40-whisperer.iml" />
+    </modules>
+  </component>
+</project>

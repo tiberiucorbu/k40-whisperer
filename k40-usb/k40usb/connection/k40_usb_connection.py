@@ -20,7 +20,6 @@
 
 """
 
-
 import logging
 
 import usb
@@ -130,7 +129,6 @@ class K40UsbConnectionManager(object):
     def release_usb(self) -> None:
         usb.util.dispose_resources(self.dev)
         self.dev = None
-        self.connection.next(self.dev)
 
     def ensure_connection(self) -> None:
         if self.dev is None:
@@ -138,11 +136,14 @@ class K40UsbConnectionManager(object):
 
     def write(self, command_id, parameters) -> None:
         self.ensure_connection()
-        self.dev.write(WRITE_ADDRESS, [command_id] + parameters, 2000)
+        self.dev.write(WRITE_ADDRESS, [command_id] + parameters, 200)
 
     def read(self):
         self.ensure_connection()
-        return self.dev.read(READ_ADDRESS, 168)
+        return self.dev.read(READ_ADDRESS, 168, 200)
+
+    def reset(self):
+        self.dev.reset()
 
 
 if __name__ == '__main__':
