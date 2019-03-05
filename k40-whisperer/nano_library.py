@@ -18,7 +18,7 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
-import deprecated as deprecated
+import logging
 
 try:
     import usb.core
@@ -26,10 +26,9 @@ try:
 except:
     print("Unable to load USB library (Sending data to Laser will not work.)")
 import os
-from time import time
-
 from egv import egv
 from windowsinhibitor import WindowsInhibitor
+from time import time
 
 
 ##############################################################################
@@ -97,7 +96,7 @@ class K40_CLASS:
                     print("5: ", response[5])
                 else:
                     print(".", )
-
+            logging.info('got response, %s', response)
             if response[1] == self.OK or \
                     response[1] == self.BUFFER_FULL or \
                     response[1] == self.CRC_ERROR or \
@@ -292,7 +291,7 @@ class K40_CLASS:
             egv_inst = egv(target=lambda s: data.append(s))
             egv_inst.make_move_data(dxmils, dymils)
             self.send_data(data, wait_for_laser=False)
-    @deprecated
+
     def initialize_device(self, verbose=False):
         try:
             self.release_usb()
@@ -355,6 +354,7 @@ class K40_CLASS:
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.DEBUG)
     k40 = K40_CLASS()
     run_laser = False
 
