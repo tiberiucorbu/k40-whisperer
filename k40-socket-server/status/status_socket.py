@@ -4,9 +4,7 @@ import socketio
 sio = socketio.Server()
 
 
-app = socketio.WSGIApp(sio, static_files={
 
-})
 
 @sio.on('connect')
 def connect(sid, environ):
@@ -18,5 +16,4 @@ def disconnect(sid):
     print('disconnect ', sid)
 
 
-if __name__ == '__main__':
-    eventlet.wsgi.server(eventlet.listen(('', 5000)), app)
+
