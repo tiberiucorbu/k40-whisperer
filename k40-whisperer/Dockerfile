@@ -4,8 +4,9 @@ WORKDIR /usr/src/app
 
 RUN addgroup -S lasercutter  && adduser -S -G lasercutter lasercutter
 
-COPY requirements.txt ./
 
+COPY requirements.txt ./
+COPY ../k40-usb .
 RUN apk add --no-cache gcc libxml2-dev libxslt-dev libc-dev \
                        # Pillow dependencies
                        jpeg-dev \
@@ -18,6 +19,8 @@ RUN apk add --no-cache gcc libxml2-dev libxslt-dev libc-dev \
                        tcl-dev \
                        harfbuzz-dev \
                        fribidi-dev
+
+RUN pip install ./k40-usb
 
 RUN pip install --no-cache-dir -r requirements.txt
 
