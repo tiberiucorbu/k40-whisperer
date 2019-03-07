@@ -1,0 +1,4 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/k40-whisperer/k40-whisperer', './k40-whisperer']
+    timeout: 500s
