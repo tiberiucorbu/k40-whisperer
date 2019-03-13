@@ -1,6 +1,6 @@
 # K40 Socket Bridge
 
-A fork of https://github.com/scorchworks/K40-Whisperer that aims to improve the codebase and its re-usability and adds a network, web interface and 
+A fork of scorchworks K40-Whisperer that aims to improve the codebase and its re-usability and adds a network, web interface and 
 multi-user features
 
 ----- 
